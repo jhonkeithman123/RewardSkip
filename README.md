@@ -9,6 +9,8 @@ A Xposed / LSPosed (Vector) module that skips rewarded video ads and still credi
 RewardSkip is useful on low-end devices where playing a full 30-second rewarded ad just to
 collect a small in-game reward is a waste of time and battery.
 
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
+
 ---
 
 ## Features
