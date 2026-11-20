@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name" translatable="false">RewardSkip</string>
+    <string name="app_desc">Skip reward ads and receive the reward instantly or after a short delay</string>
+</resources>

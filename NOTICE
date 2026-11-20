@@ -1,0 +1,19 @@
+RewardSkip - a fork of SkipRewardAd
+Copyright (C) 2026 RewardSkip contributors
+
+This project is a derivative work of SkipRewardAd
+Copyright (C) LinYuLuo, distributed under the GNU General Public
+License, version 2. It is remixed under the same license.
+
+Original project author: LinYuLuo
+Original support page: https://afdian.net/a/LinYuLuo
+
+RewardSkip adds:
+  - instant skip mode (fire the full reward callback sequence)
+  - delayed ~5s skip mode (lower-detection option)
+  - AppLovin MAX, Unity LevelPlay and Mintegral hooks
+  - a documented mode interface for external controllers (e.g. RamGuard)
+  - renamed package and project identity
+
+All changes are Copyright (C) 2026 RewardSkip contributors and are
+licensed under GPL-2.0-or-later. See LICENSE for the full license text.

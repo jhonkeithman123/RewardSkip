@@ -1,0 +1,17 @@
+*.apk
+*.apk.idsig
+*.jks
+*.keystore
+*.class
+*.dex
+build/
+target/
+.gradle/
+local.properties
+.idea/
+*.iml
+.DS_Store
+signing.properties
+__pycache__/
+*.pyc
+
