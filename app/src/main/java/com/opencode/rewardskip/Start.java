@@ -27,7 +27,15 @@ public class Start implements IXposedHookLoadPackage {
     private int hash;
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam load) {
-        if (!load.isFirstApplication || !load.appInfo.processName.equals(load.processName)) {
+        if (!load.isFirstApplication) {
+            return;
+        }
+        // Older LSPosed (e.g. 1.9.2) passes a null appInfo when injected into
+        // system_server; Vector/API 102 always populates it. Fall back to
+        // packageName instead of throwing before any hooks can be installed.
+        String target = (load.appInfo != null && load.appInfo.processName != null)
+                ? load.appInfo.processName : load.packageName;
+        if (target == null || !target.equals(load.processName)) {
             return;
         }
         XposedHelpers.findAndHookMethod(Application.class, "attach", Context.class, new XC_MethodHook() {

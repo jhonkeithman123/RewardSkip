@@ -97,6 +97,17 @@ public abstract class BaseHook {
 
     /** true = play the ad ~5s then close it; false = skip instantly (default) */
     protected final boolean delayedMode() {
+        // First ask the framework for this module's own preferences (written by the
+        // gear-icon SettingsActivity). LSPosed/Vector can read them across processes.
+        try {
+            Class<?> cls = Class.forName("de.robv.android.xposed.XSharedPreferences");
+            Object prefs = cls.getConstructor(String.class, String.class)
+                    .newInstance("com.opencode.rewardskip", "rewardskip");
+            String m = (String) cls.getMethod("getString", String.class, String.class)
+                    .invoke(prefs, "mode", "instant");
+            if (m != null) return m.trim().equals("delayed");
+        } catch (Throwable ignore) {
+        }
         String[] paths = {
             "/data/local/tmp/skip_mode.txt"
         };

@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   count, active mode and which ad SDKs were detected in the app.
 - APK version is now read from `app/build.gradle` instead of being duplicated in the
   build script.
+- Gear-icon settings activity shown in the framework's module list, with mode switching
+  and a shortcut to the framework manager. Scope remains in the framework's Scope tab
+  because it is stored in root-only framework data.
+- Compatibility fix for older LSPosed (e.g. 1.9.2), which passes a null `appInfo` for
+  `system_server`: the entry point now falls back to `packageName` instead of throwing
+  before hooks are installed.
 
 ## [1.0.0] - 2026-11-20
 

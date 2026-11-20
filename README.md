@@ -136,6 +136,20 @@ scripts/build.py              standalone APK builder
 
 ---
 
+## Gear icon (module settings)
+
+Once the module is enabled in LSPosed/Vector, a **gear icon** appears next to it in the
+framework's module list. Tapping it opens RewardSkip's own settings page where you can:
+
+- switch between **instant** and **delayed** mode (saved in the module's own
+  `SharedPreferences`, read by the hook through `XSharedPreferences`, with the
+  `/data/local/tmp/skip_mode.txt` file as a fallback)
+- open your framework manager's UI
+
+**Scope is not edited there.** Scope lives in the framework's root-only database, so it
+must be set in **LSPosed/Vector → Modules → RewardSkip → Scope**. The settings page says
+this explicitly and provides a button to jump to the manager.
+
 ## Self-diagnostics
 
 To prevent silent failures like a stale entry point after a package rename:
