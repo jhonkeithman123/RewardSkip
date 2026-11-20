@@ -45,6 +45,9 @@ First release of **RewardSkip**, a renamed fork of LinYuLuo's SkipRewardAd.
   `onAdDisplayed` before the reward callback, which those games require.
 - Removed the tightly-coupled fallback to RamGuard's private config directory from
   the mode reader; the module now has a single, documented mode interface.
+- `assets/xposed_init` now points to `com.opencode.rewardskip.Start`; without this,
+  Vector/LSPosed could load the APK but failed to find the renamed entry class,
+  so no hooks were ever installed.
 
 ### Known limitations
 
