@@ -16,6 +16,9 @@ import shutil
 import subprocess
 import sys
 import zipfile
+import re
+
+import doctor
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -70,6 +73,11 @@ def main():
     ap.add_argument("--alias", default="rewardskip")
     args = ap.parse_args()
 
+    # self-healing preflight: detect and auto-fix package / entry-point drift
+    # (e.g. a stale assets/xposed_init that silently disables every hook)
+    if not doctor.check(ROOT, fix=True):
+        raise SystemExit("Preflight failed - refusing to build a broken APK")
+
     sdk = find_sdk(args.sdk)
     bt = newest(sdk / "build-tools")
     platforms = sorted((sdk / "platforms").glob("android-*"),
@@ -109,6 +117,13 @@ def main():
     run([d8, "--lib", android_jar, "--lib", work / "stub_classes",
          "--output", work / "dex", *classes])
 
+    # keep APK version in sync with app/build.gradle
+    gradle_text = (ROOT / "app" / "build.gradle").read_text(encoding="utf-8")
+    vc = re.search(r'versionCode\s+(\d+)', gradle_text)
+    vn = re.search(r'versionName\s+"([^"]+)"', gradle_text)
+    version_code = vc.group(1) if vc else "1000000"
+    version_name = vn.group(1) if vn else "1.0.0"
+
     # 4. resources / manifest -> base APK
     res_flat = work / "apk" / "res.zip"
     run([aapt2, "compile", "--dir", ROOT / "app" / "src" / "main" / "res",
@@ -124,8 +139,8 @@ def main():
          "-o", base,
          "--min-sdk-version", "21",
          "--target-sdk-version", "34",
-         "--version-code", "1000000",
-         "--version-name", "1.0.0"])
+         "--version-code", version_code,
+         "--version-name", version_name])
 
     # 5. inject classes.dex
     with zipfile.ZipFile(base, "a", zipfile.ZIP_DEFLATED) as z:

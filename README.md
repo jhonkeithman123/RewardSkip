@@ -136,6 +136,31 @@ scripts/build.py              standalone APK builder
 
 ---
 
+## Self-diagnostics
+
+To prevent silent failures like a stale entry point after a package rename:
+
+- `python scripts/doctor.py` checks that `applicationId`, the manifest package, all Java
+  package declarations and `assets/xposed_init` agree, that the entry class exists and
+  implements `IXposedHookLoadPackage`, and that Xposed meta-data is present.
+- `python scripts/doctor.py --fix` additionally rewrites the **known** files
+  (`AndroidManifest.xml`, `app/build.gradle`, `assets/xposed_init`) when they drift.
+  Anything else is only warned about — it is never silently rewritten.
+- `scripts/build.py` runs the doctor with `--fix` as a preflight check and refuses to
+  produce an APK if any errors remain. CI runs the doctor in check-only mode.
+
+At runtime, once injected into a game, the module logs a single self-check line to the
+framework log (e.g. `/data/adb/lspd/log/` under Vector, visible in the manager's log viewer):
+
+```
+RewardSkip self-check | pkg=<game package> | entry=com.opencode.rewardskip.Start |
+hooks=14/14 | mode=instant | adSDKs=[LevelPlay,AppLovin]
+```
+
+This tells you whether the entry class loaded, how many hooks installed, which mode is
+active, and which ad SDKs were actually found in that app — so you can tell at a glance
+whether a game simply has no supported ad SDK.
+
 ## Troubleshooting
 
 - **"No module activated"** — make sure Vector/LSPosed sees the app and that the module is

@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `scripts/doctor.py` source doctor: validates package/entry-point consistency and can
+  auto-fix the known files (`AndroidManifest.xml`, `app/build.gradle`, `assets/xposed_init`)
+  with `--fix`. Warns about anything else instead of rewriting it.
+- The build runs the doctor as a preflight and refuses to emit an APK on errors; CI runs
+  it in check-only mode.
+- Runtime self-check line on injection reporting the target package, entry class, hook
+  count, active mode and which ad SDKs were detected in the app.
+- APK version is now read from `app/build.gradle` instead of being duplicated in the
+  build script.
+
 ## [1.0.0] - 2026-11-20
 
 First release of **RewardSkip**, a renamed fork of LinYuLuo's SkipRewardAd.
@@ -55,4 +69,5 @@ First release of **RewardSkip**, a renamed fork of LinYuLuo's SkipRewardAd.
   in the source. AppLovin MAX, Unity LevelPlay and Mintegral are the maintained ones.
 - Delayed mode credits the reward after the delay but does not force-close the real ad.
 
+[Unreleased]: https://github.com/OPencode/RewardSkip/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/OPencode/RewardSkip/releases/tag/v1.0.0

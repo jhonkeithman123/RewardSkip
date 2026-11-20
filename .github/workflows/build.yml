@@ -24,7 +24,10 @@ jobs:
       - name: Install SDK packages
         run: sdkmanager "platforms;android-34" "build-tools;35.0.0"
 
-      - name: Build signed APK
+      - name: Source doctor (package / entry-point consistency)
+        run: python3 scripts/doctor.py
+
+      - name: Build signed APK (runs doctor --fix as preflight)
         run: python3 scripts/build.py --out RewardSkip.apk
 
       - name: Upload APK

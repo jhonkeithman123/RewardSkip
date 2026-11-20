@@ -19,6 +19,7 @@ import com.opencode.rewardskip.hook.UnityAdHook2;
 import com.opencode.rewardskip.hook.VungleAdHook;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -41,20 +42,33 @@ public class Start implements IXposedHookLoadPackage {
         });
     }
     
-    private synchronized void startHook(Context baseContext) {
-        new GdtAdHook1(baseContext);
-        new GdtAdHook2(baseContext);
-        new FusionAdHook(baseContext);
-        new TTAdHook(baseContext);
-        new BaiduAdHook(baseContext);
-        new SigmobAdHook(baseContext);
-        new MintegralAdHook(baseContext);
-        new UnityAdHook1(baseContext);
-        new UnityAdHook2(baseContext);
-        new KsAdHook(baseContext);
-        new VungleAdHook(baseContext);
-        new GoogleAdHook1(baseContext);
-        new ApplovinAdHook(baseContext);
-        new LevelPlayHook(baseContext);
+    private int loadedHooks;
+
+    private void safeHook(Runnable r, String name) {
+        try {
+            r.run();
+            loadedHooks++;
+        } catch (Throwable t) {
+            XposedBridge.log("RewardSkip: hook " + name + " failed: " + t);
+        }
+    }
+
+    private synchronized void startHook(final Context baseContext) {
+        loadedHooks = 0;
+        safeHook(() -> new GdtAdHook1(baseContext), "GdtAdHook1");
+        safeHook(() -> new GdtAdHook2(baseContext), "GdtAdHook2");
+        safeHook(() -> new FusionAdHook(baseContext), "FusionAdHook");
+        safeHook(() -> new TTAdHook(baseContext), "TTAdHook");
+        safeHook(() -> new BaiduAdHook(baseContext), "BaiduAdHook");
+        safeHook(() -> new SigmobAdHook(baseContext), "SigmobAdHook");
+        safeHook(() -> new MintegralAdHook(baseContext), "MintegralAdHook");
+        safeHook(() -> new UnityAdHook1(baseContext), "UnityAdHook1");
+        safeHook(() -> new UnityAdHook2(baseContext), "UnityAdHook2");
+        safeHook(() -> new KsAdHook(baseContext), "KsAdHook");
+        safeHook(() -> new VungleAdHook(baseContext), "VungleAdHook");
+        safeHook(() -> new GoogleAdHook1(baseContext), "GoogleAdHook1");
+        safeHook(() -> new ApplovinAdHook(baseContext), "ApplovinAdHook");
+        safeHook(() -> new LevelPlayHook(baseContext), "LevelPlayHook");
+        SelfCheck.report(baseContext, loadedHooks, 14);
     }
 }
