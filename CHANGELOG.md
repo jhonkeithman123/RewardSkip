@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   showing that RewardSkip is active in it (app name, skip mode and hook count).
   Toggle it on/off from the gear-icon settings screen; default is on.
 
+### Fixed
+
+- **AdMob rewarded ads were not being skipped**: the `FullScreenContentCallback`
+  was only captured when it was `null`, so `show()` never fired the fake reward
+  callbacks. It is now captured when non-null.
+- AdMob load callbacks were registered only for the first callback class seen;
+  hooks now key on each concrete callback class instead of the interface name.
+
 ## [1.0.0] - 2026-11-20
 
 First release of **RewardSkip**, a renamed fork of LinYuLuo's SkipRewardAd.
