@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`scripts/scan_target.py`** — scans an installed game's APK, reports which ad SDKs and
   reward-ad classes it contains, and generates ready-to-review recipes.
 - **`config/rewardskip_generic.json`** — documented example config.
+- **One-click builders** — `build.bat` (Windows) and `build.sh` (Linux/macOS) wrappers, plus
+  `--install` / `--serial` options on `scripts/build.py` to build and deploy in one command.
+- **Documentation set** under `docs/`: usage guide, architecture, recipe schema and FAQ.
 
 ### Fixed
 

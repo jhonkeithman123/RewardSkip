@@ -14,6 +14,13 @@ mode and hook count). This can be turned off in the gear-icon settings.
 
 See [CHANGELOG.md](CHANGELOG.md) for release notes.
 
+### Documentation
+
+- [Usage guide](docs/USAGE.md) — install, scope, modes, verification, extending support
+- [Architecture](docs/ARCHITECTURE.md) — injection lifecycle, hook flows, build pipeline
+- [Recipe schema](docs/RECIPE_SCHEMA.md) — add a new SDK without rebuilding
+- [FAQ](docs/FAQ.md) — common questions and fixes
+
 ---
 
 ## Features
@@ -138,13 +145,21 @@ class or method name.
 
 ## Building
 
-### Option A — Gradle / Android Studio
+### Option A — one-click wrapper
+
+```bat
+build.bat              :: Windows
+./build.sh             :: Linux / macOS
+build.bat --install    :: build and install on the connected device
+```
+
+### Option B — Gradle / Android Studio
 
 Open the repository in Android Studio and build the `app` module, or run `./gradlew
 :app:assembleRelease`. A Gradle wrapper properties file is included; generate the wrapper JAR
 with `gradle wrapper` if it is missing.
 
-### Option B — command line (no wrapper JAR needed)
+### Option C — command line (no wrapper JAR needed)
 
 `scripts/build.py` drives the Android SDK tools directly. It auto-detects the SDK from
 `ANDROID_HOME`, `ANDROID_SDK_ROOT` or the default install location, generates a local signing

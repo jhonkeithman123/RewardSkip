@@ -71,6 +71,9 @@ def main():
     ap.add_argument("--keystore", default=str(ROOT / "rewardskip.jks"))
     ap.add_argument("--storepass", default="rewardskip")
     ap.add_argument("--alias", default="rewardskip")
+    ap.add_argument("--install", action="store_true",
+                    help="install the built APK on a connected device via adb")
+    ap.add_argument("--serial", help="adb device serial to use with --install")
     args = ap.parse_args()
 
     # self-healing preflight: detect and auto-fix package / entry-point drift
@@ -163,6 +166,22 @@ def main():
          "--key-pass", f"pass:{args.storepass}",
          "--out", out, aligned])
     print(f"\nBuilt {out} ({out.stat().st_size} bytes)")
+
+    if args.install:
+        pt = sdk / "platform-tools"
+        adb = next((str(p) for p in (pt / "adb.exe", pt / "adb") if p.exists()), "adb")
+        devices = subprocess.run([adb, "devices"], capture_output=True, text=True).stdout
+        if args.serial:
+            targets = [args.serial]
+        else:
+            targets = [l.split()[0] for l in devices.splitlines()
+                       if l.strip().endswith("\tdevice")]
+        if not targets:
+            raise SystemExit("No connected device found. Check 'adb devices' and USB debugging.")
+        for serial in targets:
+            print(f"\nInstalling on {serial} ...")
+            run([adb, "-s", serial, "install", "-r", str(out)])
+        print("Done. Force-stop and reopen the target games.")
 
 
 if __name__ == "__main__":

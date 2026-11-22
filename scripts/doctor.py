@@ -152,9 +152,21 @@ def check(root=ROOT, fix=False):
                 or f.name == "doctor.py"):
             continue
         text = read(f) or ""
+        # A fork must keep naming the upstream project in attribution, links and
+        # "inherited from upstream" notes. Only flag bare references elsewhere.
+        attribution = ("fork of", "upstream", "http://", "https://",
+                       "attribution", "inherited", "derivative", "licensed",
+                       "original", "based on")
         for pat in patterns:
-            if pat in text and f.name not in ("CHANGELOG.md", "NOTICE"):
+            if f.name in ("CHANGELOG.md", "NOTICE"):
+                continue
+            for line in text.splitlines():
+                if pat not in line:
+                    continue
+                if any(k in line.lower() for k in attribution):
+                    continue
                 stale.append((f, pat))
+                break
     for f, pat in stale:
         rep.warn(f"stale reference {pat!r} in {f.relative_to(ROOT)}")
 
