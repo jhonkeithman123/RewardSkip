@@ -78,5 +78,7 @@ public class Start implements IXposedHookLoadPackage {
         safeHook(() -> new ApplovinAdHook(baseContext), "ApplovinAdHook");
         safeHook(() -> new LevelPlayHook(baseContext), "LevelPlayHook");
         SelfCheck.report(baseContext, loadedHooks, 14);
+        // Let the user know the module is active in this app/game.
+        LaunchNotice.show(baseContext, loadedHooks, 14);
     }
 }

@@ -28,6 +28,8 @@ public class SettingsActivity extends Activity {
     private static final String MODE_INSTANT = "instant";
     private static final String MODE_DELAYED = "delayed";
     private static final String MODE_FILE = "/data/local/tmp/skip_mode.txt";
+    private static final String KEY_NOTICE = "show_notice";
+    private static final String NOTICE_FILE = "/data/local/tmp/rewardskip_notice.txt";
 
     private static final String BG = "#0F1117";
     private static final String CARD = "#1C2030";
@@ -36,6 +38,7 @@ public class SettingsActivity extends Activity {
     private static final String MUTED = "#9AA3B2";
 
     private TextView tvMode;
+    private TextView tvNotice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,40 @@ public class SettingsActivity extends Activity {
         modeCard.addView(row);
         root.addView(modeCard);
 
+        LinearLayout noticeCard = card();
+        TextView noticeLabel = new TextView(this);
+        noticeLabel.setText("LAUNCH NOTICE");
+        noticeLabel.setTextColor(Color.parseColor(ACCENT));
+        noticeLabel.setTextSize(11);
+        noticeLabel.setTypeface(null, android.graphics.Typeface.BOLD);
+        noticeLabel.setLetterSpacing(1f);
+        noticeCard.addView(noticeLabel);
+
+        tvNotice = new TextView(this);
+        tvNotice.setTextSize(15);
+        tvNotice.setTextColor(Color.parseColor(WHITE));
+        tvNotice.setPadding(0, dp(8), 0, dp(12));
+        noticeCard.addView(tvNotice);
+
+        TextView noticeInfo = new TextView(this);
+        noticeInfo.setText("Show a short toast when a patched app or game opens, "
+                + "confirming RewardSkip is active in it.");
+        noticeInfo.setTextColor(Color.parseColor(MUTED));
+        noticeInfo.setTextSize(12);
+        noticeInfo.setPadding(0, 0, 0, dp(10));
+        noticeCard.addView(noticeInfo);
+
+        LinearLayout noticeRow = new LinearLayout(this);
+        noticeRow.addView(button("ON", v -> setNotice(true)));
+        Button off = button("OFF", v -> setNotice(false));
+        LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        nlp.leftMargin = dp(8);
+        off.setLayoutParams(nlp);
+        noticeRow.addView(off);
+        noticeCard.addView(noticeRow);
+        root.addView(noticeCard);
+
         LinearLayout scopeCard = card();
         TextView scopeLabel = new TextView(this);
         scopeLabel.setText("GAME SCOPE");
@@ -136,6 +173,42 @@ public class SettingsActivity extends Activity {
         tvMode.setText(mode.equals(MODE_DELAYED)
                 ? "DELAYED - ad plays ~5s, then reward is granted"
                 : "INSTANT - ad skipped, reward granted immediately");
+        tvNotice.setText(readNotice() ? "ON - a toast appears on game launch"
+                : "OFF - no launch toast");
+    }
+
+    private boolean readNotice() {
+        try {
+            SharedPreferences p = getSharedPreferences(PREFS, MODE_PRIVATE);
+            return p.getBoolean(KEY_NOTICE, true);
+        } catch (Throwable ignore) {
+        }
+        try {
+            java.io.BufferedReader r = new java.io.BufferedReader(new java.io.FileReader(NOTICE_FILE));
+            String s = r.readLine();
+            r.close();
+            if (s != null) {
+                String v = s.trim().toLowerCase();
+                return !(v.equals("off") || v.equals("0") || v.equals("false"));
+            }
+        } catch (Throwable ignore) {
+        }
+        return true;
+    }
+
+    private void setNotice(boolean on) {
+        try {
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(KEY_NOTICE, on).commit();
+        } catch (Throwable ignore) {
+        }
+        try {
+            java.io.FileOutputStream out = new java.io.FileOutputStream(NOTICE_FILE);
+            out.write((on ? "on" : "off").getBytes("UTF-8"));
+            out.close();
+        } catch (Throwable ignore) {
+        }
+        refresh();
+        Toast.makeText(this, "Launch notice: " + (on ? "ON" : "OFF"), Toast.LENGTH_SHORT).show();
     }
 
     private String readMode() {

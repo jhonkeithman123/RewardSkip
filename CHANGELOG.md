@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Launch notice** — a short styled toast appears when a scoped app or game opens,
+  showing that RewardSkip is active in it (app name, skip mode and hook count).
+  Toggle it on/off from the gear-icon settings screen; default is on.
+
 ## [1.0.0] - 2026-11-20
 
 First release of **RewardSkip**, a renamed fork of LinYuLuo's SkipRewardAd.
