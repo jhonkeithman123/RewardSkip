@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Launch notice** — a short styled toast appears when a scoped app or game opens,
   showing that RewardSkip is active in it (app name, skip mode and hook count).
   Toggle it on/off from the gear-icon settings screen; default is on.
+- **Generic recipes** — `GenericHook` reads `/data/local/tmp/rewardskip_generic.json` and
+  installs ad hooks from a JSON config, so a new game/SDK needs a config line instead of an
+  APK rebuild. Supports ad-object capture, listener capture and configurable callback firing.
+- **`scripts/scan_target.py`** — scans an installed game's APK, reports which ad SDKs and
+  reward-ad classes it contains, and generates ready-to-review recipes.
+- **`config/rewardskip_generic.json`** — documented example config.
 
 ### Fixed
 

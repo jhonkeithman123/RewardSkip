@@ -1,0 +1,42 @@
+// RewardSkip generic hook recipes
+// Copy to: /data/local/tmp/rewardskip_generic.json
+// Then restart the target game. Lines starting with // are ignored.
+//
+// Each recipe describes one rewarded-ad API:
+//   class           ad class whose show method should be cancelled (required)
+//   showMethod      method that starts the ad (default "show")
+//   loadClass       optional callback class used to capture the ad object
+//   loadMethod      method on loadClass (default "onAdLoaded")
+//   listenerSetter  optional method on class that receives the callback object
+//   callbacks       methods to fire after cancelling show:
+//                     method   - method name to call
+//                     on       - listener | ad | arg
+//                     argIndex - which show() argument when on="arg"
+//                     arg      - reward | ad | (omitted = no argument)
+//   rewardClass     optional class holding a default reward object
+//   rewardField     static field name, or rewardMethod for a static factory
+//   enabled         false disables the recipe without deleting it
+//
+// Generate recipes automatically with:
+//   python scripts/scan_target.py <package>
+
+{
+  "version": 1,
+  "recipes": [
+    // Example: a hypothetical game that uses com.foo.ads.RewardAd
+    {
+      "name": "example custom SDK",
+      "enabled": false,
+      "class": "com.foo.ads.RewardAd",
+      "loadClass": "com.foo.ads.RewardLoadCallback",
+      "loadMethod": "onAdLoaded",
+      "listenerSetter": "setListener",
+      "showMethod": "show",
+      "callbacks": [
+        { "method": "onAdDisplayed", "on": "listener" },
+        { "method": "onRewarded", "on": "listener" },
+        { "method": "onAdClosed", "on": "listener" }
+      ]
+    }
+  ]
+}

@@ -9,6 +9,9 @@ A Xposed / LSPosed (Vector) module that skips rewarded video ads and still credi
 RewardSkip is useful on low-end devices where playing a full 30-second rewarded ad just to
 collect a small in-game reward is a waste of time and battery.
 
+When a scoped game opens, a short toast confirms the module is active in it (app name,
+mode and hook count). This can be turned off in the gear-icon settings.
+
 See [CHANGELOG.md](CHANGELOG.md) for release notes.
 
 ---
@@ -24,6 +27,8 @@ See [CHANGELOG.md](CHANGELOG.md) for release notes.
   - Unity LevelPlay (`LevelPlayRewardedAd`)
   - Mintegral (`MBRewardVideoActivity` and reward handlers)
   - Google AdMob, GDT, Pangle/穿山甲, Kuaishou, Baidu, Sigmob, Unity Ads, Vungle, Fusion
+- **Generic recipes** — add support for a new game/SDK by editing a JSON file on the device,
+  with no APK rebuild. A scanner reports which SDK a game uses and generates the recipe.
 - No UI, no network access, no permissions.
 - Works with **Vector** (the LSPosed successor) as well as classic LSPosed / Xposed.
 
@@ -99,6 +104,38 @@ config and mirrors it into the file above, so you never need to touch a shell.
 
 ---
 
+## Supporting a new game (no rebuild)
+
+The built-in hooks cover the common ad SDKs automatically. When a game uses an SDK or callback
+pattern that is not covered, you can add a **recipe** instead of editing Java:
+
+1. Scan the installed game. This pulls its APK, lists detected ad SDKs and reward-ad classes,
+   and writes a config with ready-to-review recipes:
+
+   ```sh
+   python scripts/scan_target.py com.example.game --out recipe.json
+   ```
+
+2. Edit `recipe.json`: set `enabled` to `true` on the recipe you want, and adjust the class,
+   setter, show method and callback names if the scanner's guesses need fixing.
+   See [config/rewardskip_generic.json](config/rewardskip_generic.json) for the schema.
+
+3. Push it and restart the game:
+
+   ```sh
+   adb push recipe.json /data/local/tmp/rewardskip_generic.json
+   ```
+
+The file is read once at app launch. Recipes are **additive** to the built-in hooks — leave a
+recipe disabled if the built-in hook already handles that SDK, otherwise the callbacks may fire
+twice. The module logs `RewardSkip generic recipe '<name>' failed: ...` if a recipe has a bad
+class or method name.
+
+> A game that validates the reward on its own server (for example by reporting an ad session
+> ID) can still reject a locally faked callback. No local hook can fix that case.
+
+---
+
 ## Building
 
 ### Option A — Gradle / Android Studio
@@ -128,10 +165,15 @@ Requires: JDK (with `javac`/`keytool`) and Android SDK build-tools + platform in
 ```
 app/src/main/java/com/opencode/rewardskip/
   Start.java                  entry point, installs hooks on Application.attach
+  LaunchNotice.java           toast shown when a scoped app opens
+  Json.java                   minimal JSON reader for generic recipes
   hook/BaseHook.java          shared helper; mode-file parsing and delayed callbacks
   hook/*Hook.java             one file per ad SDK
+  hook/GenericHook.java       data-driven recipe engine
 stubs/                        minimal Xposed API stubs used by scripts/build.py
 scripts/build.py              standalone APK builder
+scripts/scan_target.py        scan an installed game and generate recipes
+config/rewardskip_generic.json  documented example recipe config
 ```
 
 ---
@@ -168,7 +210,7 @@ framework log (e.g. `/data/adb/lspd/log/` under Vector, visible in the manager's
 
 ```
 RewardSkip self-check | pkg=<game package> | entry=com.opencode.rewardskip.Start |
-hooks=14/14 | mode=instant | adSDKs=[LevelPlay,AppLovin]
+hooks=15/15 | mode=instant | adSDKs=[LevelPlay,AppLovin]
 ```
 
 This tells you whether the entry class loaded, how many hooks installed, which mode is

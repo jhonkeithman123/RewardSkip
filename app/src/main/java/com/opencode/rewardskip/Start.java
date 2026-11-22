@@ -6,6 +6,7 @@ import android.content.Context;
 import com.opencode.rewardskip.hook.ApplovinAdHook;
 import com.opencode.rewardskip.hook.BaiduAdHook;
 import com.opencode.rewardskip.hook.FusionAdHook;
+import com.opencode.rewardskip.hook.GenericHook;
 import com.opencode.rewardskip.hook.GdtAdHook1;
 import com.opencode.rewardskip.hook.GdtAdHook2;
 import com.opencode.rewardskip.hook.GoogleAdHook1;
@@ -77,8 +78,9 @@ public class Start implements IXposedHookLoadPackage {
         safeHook(() -> new GoogleAdHook1(baseContext), "GoogleAdHook1");
         safeHook(() -> new ApplovinAdHook(baseContext), "ApplovinAdHook");
         safeHook(() -> new LevelPlayHook(baseContext), "LevelPlayHook");
-        SelfCheck.report(baseContext, loadedHooks, 14);
+        safeHook(() -> new GenericHook(baseContext), "GenericHook");
+        SelfCheck.report(baseContext, loadedHooks, 15);
         // Let the user know the module is active in this app/game.
-        LaunchNotice.show(baseContext, loadedHooks, 14);
+        LaunchNotice.show(baseContext, loadedHooks, 15);
     }
 }
